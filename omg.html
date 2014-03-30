@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="css/barui.css">
+<script>
+
+
+function initial(stage)
+{
+	if (stage ==1)
+		{power[1] = 10;
+		sanity[1] = 10;
+		makingmoneycoef = 0.6;
+	}
+	else if (stage ==2)
+		{power[1] = 20;
+		sanity[1] = 70;
+	makingmoneycoef=0.5;}
+	else if (stage ==3)
+		{power[1] = 70;
+		sanity[1] = 10;
+	makingmoneycoef=0.5;}
+	else if (stage ==4)
+		{power[1] = 90;
+		sanity[1] = 80;
+	makingmoneycoef=0.4}
+	$('#initial').hide(); //hide the initial div
+	upgradeallstuff();
+}
+
+function end(type)
+{
+	if (type ==1)
+	{
+	$('#cao').hide();
+	$('#end').html("burnout");
+	}
+	else if (type ==2)
+	{}
+}
+
+function upgrade(category)
+{
+//sequence: 1.salesperson;2.bartender;3.cleaner;4.liveband;5.security;6.servant;
+	if (category ==1)
+	{
+		if (star_salesperson<=4 && totalincome>=upgradefee[star_salesperson])
+		{
+			totalincome -=upgradefee[star_salesperson];
+			star_salesperson += 1;
+			upgradeallstuff();
+		}
+		else if (star_salesperson ==5)
+		{
+			alert("you cannot find better salesperson");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+	else if (category ==2)
+	{
+		if (star_bartender<=4 && totalincome>=upgradefee[star_bartender])
+		{
+			totalincome -=upgradefee[star_bartender];
+			star_bartender += 1;
+			upgradeallstuff();
+		}
+		else if (star_bartender ==5)
+		{
+			alert("you cannot find better bartenders");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+	else if (category ==3)
+	{
+		if (star_cleaner<=4 && totalincome>=upgradefee[star_cleaner])
+		{
+			totalincome -=upgradefee[star_cleaner];			
+			star_cleaner += 1;
+			upgradeallstuff();
+		}
+		else if (star_cleaner ==5)
+		{
+			alert("you cannot find better cleaners");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+	else if (category ==4)
+	{
+		if (star_liveband<=4 && totalincome>=upgradefee[star_liveband])
+		{
+			totalincome -=upgradefee[star_liveband];			
+			star_liveband += 1;
+			upgradeallstuff();
+		}
+		else if (star_liveband ==5)
+		{
+			alert("you cannot find better livebands");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+	else if (category ==5)
+	{
+		if (star_security<=4 && totalincome>=upgradefee[star_security])
+		{
+			totalincome -=upgradefee[star_security];			
+			star_security += 1;
+			upgradeallstuff();
+		}
+		else if (star_security ==5)
+		{
+			alert("you cannot find better securities");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+	else if (category ==6)
+	{
+		if (star_servant<=4 && totalincome>=upgradefee[star_servant])
+		{
+			totalincome -=upgradefee[star_servant];
+			star_servant += 1;
+			upgradeallstuff();
+		}
+		else if (star_servant ==5)
+		{
+			alert("you cannot find better servants");
+		}
+		else
+		{
+			alert("you don't have enough money to hire them");
+		}
+	}
+}
+
+function fightagainst(ownpower,enemypower)
+{
+	var win = 1;
+	var result = Math.random() * (ownpower+enemypower);
+	if (result<ownpower)
+		win = 1;
+	else
+		win = 0;
+	//console.log(win);
+	return win;
+}
+
+
+function accidents(times) //only valid when times > 0,other wise break;
+{var accidentid = [1,2,3,4,5,6,7,8,9,10];
+var flag = 0;
+console.log(times);
+
+if (times == 0)
+	{
+		monthlyincome();
+		return null;
+	}
+
+
+  $('#cao').fadeOut();
+
+/*
+1: nice sanitation, award 2000
+2: nice service, award 1000
+3: you find a wallet, a telephone number in it, cash of 500. dial it->raise popularity, keep the money, leave it there?
+4: you find a wallet, a telephone number in it, cash of 10000, several diamonds. dial? keep? leave it there?give it to police? 
+5: a guy eat a lot 
+6: a table caught fire, save or not? save cost 500, not save, bigger fire 10000 or nothing big deal or burn out
+7: bartender got kidnapped, shocked and come back. say hello? leave him? angrily ask where have you been? bartenderlevel minus one
+8: protection fee, give or not? give:20% total income, not give, win, get 10% income, lose give 50% total income
+9: a guest found a bug in drink? explain it's not a bug and throw it. pay for their bill. 
+10:drunks conflicts. kindly interfere? interfere rudely? enjoy the show? might lead to shooting,shut down
+*/
+var rolldice = parseInt(Math.random()*12)+1;
+console.log(rolldice);
+if ( rolldice == 1 &&(sanity[0]>sanity[1]+10))
+{
+	$('#cao').hide();
+	$('#cao').html('<img src=\'image/bestsanitation.jpg\' />\
+		<button onclick = \'accidents('.concat(times-1).concat(')\'>OK</button>'));
+	console.log("1: nice sanitation, award 2000");
+	extra_monthlyincome = 2000;
+	 upgradeallstuff();
+	 $('#cao').fadeIn();
+}
+
+else if (rolldice == 2 && service >=75)
+{
+	$('#cao').hide();
+	console.log("2: nice service, award 1000");
+	extra_monthlyincome = 1000;
+	$('#cao').html('<img src=\'image/bestservice.jpg\' />\
+		<button onclick = \'accidents('.concat(times-1).concat(')\'>caoei</button>'));
+	 upgradeallstuff();	
+	$('#cao').fadeIn();
+}
+else if (rolldice == 3)
+{
+	$('#cao').hide();
+	console.log("3: you find a wallet,");
+	$('#cao').html('<img src=\'image/wallet.jpg\' />\
+		<button onclick = \'getwallet()\'>keep it yourself</button>'
+	+('<button onclick = \'returnwallet()\'>try to contact that guy</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 4)
+{
+	$('#cao').hide();
+	console.log("4:treasure");
+	$('#cao').html('<img src=\'image/treasure.jpg\' />\
+		<button onclick = \'gettreasure()\'>keep it yourself</button>'
+	+('<button onclick = \'returntreasure()\'>try to give it back</button>')
+	+('<button onclick = \'givetopolice()\'>give it to police</button>')
+	+('<button onclick = \'leaveitthere()\'>leave it there</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 5)
+{
+	$('#cao').hide();
+	console.log("5: a guy eat a lot ");
+$('#cao').html('<img src=\'image/drinker.jpg\' />\
+		<button onclick = \'stophim()\'>stop him</button>'
+	+('<button onclick = \'lethimeat()\'>try to give it back</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 6 && totalincome>6000)
+{
+	$('#cao').hide();
+	console.log("6: a table caught fire");
+	$('#cao').html('<img src=\'image/fire.jpg\' />\
+		<button onclick = \'savefire()\'>stop him</button>'
+	+('<button onclick = \'ignorefire()\'>try to give it back</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 7 && star_bartender>=3)
+{
+	$('#cao').hide();
+	console.log("7: bartender got kidnapped");
+	$('#cao').html('<img src=\'image/kidnap.jpg\' />\
+		<button onclick = \'callpolice()\'>call the police!</button>'
+	+('<button onclick = \'ignorebartender()\'>ignore him</button>')
+	+('<button onclick = \'securitysearch()\'>send security guys to search</button>')
+	+('<button onclick = \'kidnapmoney()\'>give kidnap money</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 8 && totalincome>6000)
+{
+	$('#cao').hide();
+	console.log("8: protection fee");
+	$('#cao').html('<img src=\'image/black.jpg\' />\
+		<button onclick = \'accidents('.concat(times-1).concat(')\'>caoei</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 9 && sanity[0]<70)
+{	
+	$('#cao').hide();
+	console.log("9: a guest found a bug ");
+	$('#cao').html('<img src=\'image/bug.jpg\' />\
+		<button onclick = \'accidents('.concat(times-1).concat(')\'>caoei</button>'));
+	$('#cao').fadeIn();
+}
+else if (rolldice == 10 && drinktypes>60)
+{
+	$('#cao').hide();
+	console.log("10.drunks conflicts");
+	$('#cao').html('<img src=\'image/drunk.jpg\' />\
+		<button onclick = \'accidents('.concat(times-1).concat(')\'>caoei</button>'));
+	$('#cao').fadeIn();
+}
+else 
+	{accidents(times-1);}
+}
+
+//wallet
+
+
+function getwallet()
+{
+	extra_monthlyincome = 50;
+	$('#cao').html('<p>you got all the money, 50 dollars</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	upgradeallstuff();
+}
+
+function returnwallet()
+{
+	extra_monthlyincome = 500;
+	$('#cao').html("<p>He thanks you with more cash in the wallet, 500 dollars</p>"+"<button onclick=\'accidents("+ (times-1)  +")\'>OK</button>");
+	upgradeallstuff();
+}
+
+//treasure
+function gettreasure()
+{
+	//end
+}
+
+function returntreasure()
+{
+	extra_monthlyincome = -1000;
+	//it's a thief!
+	$('#cao').html('<p>He is acturally a notorious thief, he thanked you and steal 1000 from you.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	upgradeallstuff();
+}
+
+function givetopolice()
+{
+	bonuspopularity = 5;
+	$('#cao').html('<p>They turned out to be stolen antiques, you are praised in the newspaper and people like you.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	upgradeallstuff();
+}
+
+function leaveitthere()
+{
+	//nothing happened, and 
+	$('#cao').html('<p>It was taken by someone you didn\'t notice.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+
+}
+//eat a lot
+function stophim()
+{
+	//servant stop him
+	if (star_servant>=1)
+		star_servant -= 1;
+	upgradeallstuff();
+	$('#cao').html('<p>the guy beat your servant very hard. he stayed at home for several days, skills downgraded.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+}
+function lethimeat()
+{
+	extra_monthlyincome =250;
+	$('#cao').html('<p>He ate so much that he bruoght you extraincome $250.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	upgradeallstuff();
+}
+
+//caught fire
+function savefire()
+{
+	var fate = Math.random();
+	if (fate<=0.3)
+	{
+		extra_monthlyincome = -5000;
+		$('#cao').html('<p>Your crew fight bravely, you gave them $5000 as bonus. Cheers! T T</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	}
+	else if (fate>0.3&&fate<=0.7)
+	{
+		extra_monthlyincome = -100;
+		$('#cao').html('<p>The table was burnt out, you need to pay 100 to replace it, but all the other stuff is safe!</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');	
+	}
+	else
+	{
+		star_security = 0;
+		$('#cao').html('<p>your security guy sacrifice themselves to save your bar. we are sorry about that.</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');	
+	}
+	upgradeallstuff();
+}
+
+function ignorefire()
+{
+	var fate = Math.random();
+	if (fate<=1)
+	{
+		end(1);
+	}
+}
+
+
+//kidnap
+function callpolice()
+{
+	var fate = Math.random();
+	if (fate<=0.5)
+	{
+		$('#cao').html('<p>The polica helped you find your bartender, for free</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+	}
+	else
+	{
+		star_bartender = 0;
+		$('#cao').html('<p>They cannot find your bartender. we wish him all well somewhere, while...not in your bar</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');	
+		upgradeallstuff();
+}
+}
+
+function ignorebartender()
+{
+	var fate = Math.random();
+	if (fate<=0.5)
+	{
+		star_bartender = 0;
+		$('#cao').html('<p>He went back himself, swearing he would never work for you</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+		upgradeallstuff();
+	}
+	else
+	{
+		$('#cao').html('<p>His family called police, and they saved him immediately</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');	
+}
+}
+function securitysearch()
+{
+	var fate = Math.random();
+	if (fate<=0.5 && power[0]>=power[1])
+	{
+		$('#cao').html('<p>Congratulations, your security guys saved your bartender, but local bad guys are angry</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+		power[1] += 5;
+	}
+	else if (fate<=0.5 && power[0]<power[1])
+	{
+		star_bartender = 0;
+		$('#cao').html('<p>the police showed up when your security and your bartender were both beaten, </p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');	
+		upgradeallstuff();
+	}
+	else
+	{}
+}
+
+function kidnapmoney()
+{
+	extra_monthlyincome = -5000;
+	upgradeallstuff();
+	$('#cao').html('<p>You gave them 5000 dollars, as requested. The bartender </p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+}
+
+//protection fee
+function givemoney()
+{}
+
+function fightagainst()
+{}
+
+function bribe()
+{}
+
+
+//bug
+function sorry()
+{
+	$('#cao').html('<p>Congratulations, your security guys saved your bartender, but local bad guys are angry</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+}
+
+function notabug()
+{
+	$('#cao').html('<p>Congratulations, your security guys saved your bartender, but local bad guys are angry</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+}
+
+function explain()
+{
+	$('#cao').html('<p>Congratulations, your security guys saved your bartender, but local bad guys are angry</p>'+'<button onclick=\'accidents('+ (times-1)  +')\'>OK</button>');
+}
+
+//drunks conflicts
+function leavethem()
+{}
+
+function givethemdrink()
+{}
+
+function sendsecurity()
+{}
+
+function upgradeallstuff()//indicate bar and upgrade feedbacks
+{
+	effect_salesperson = [2*star_salesperson,    0,                             2*star_salesperson,     2*star_salesperson,                0,15*star_salesperson];
+	effect_bartender = [2*star_bartender,        0,            					2*star_bartender,       4*star_bartender,                  20*star_bartender,2*star_bartender];
+	effect_cleaner = [1*star_cleaner,            15*star_cleaner,               2*star_cleaner,		    2*star_cleaner,
+	0,0];
+	effect_liveband = [1*star_liveband,			0,								2*star_liveband,		8*star_liveband,			       0,3*star_liveband];
+	effect_security = [12*star_security,		0,								0,						2*star_security,		           0,0];
+	effect_servant = [2*star_servant,			5*star_servant,			12*star_servant,	    2*star_servant,		               0,0];
+
+//test
+	power[0] = effect_salesperson[0] + effect_bartender[0] + effect_cleaner[0] + effect_liveband[0] + effect_security[0] + effect_servant[0];
+	sanity[0] = effect_salesperson[1] + effect_bartender[1] + effect_cleaner[1] + effect_liveband[1] + effect_security[1] + effect_servant[1];
+	service = effect_salesperson[2] + effect_bartender[2] + effect_cleaner[2] + effect_liveband[2] + effect_security[2] + effect_servant[2];
+	popularity = effect_salesperson[3] + effect_bartender[3] + effect_cleaner[3] + effect_liveband[3] + effect_security[3] + effect_servant[3] + bonuspopularity;
+	drinktypes = effect_salesperson[4] + effect_bartender[4] + effect_cleaner[4] + effect_liveband[4] + effect_security[4] + effect_servant[4];
+	extraincomelevel = effect_salesperson[5] + effect_bartender[5]+effect_cleaner[5]+effect_liveband[5] + effect_security[5] + effect_servant[5];
+
+	bonuspopularity = 0;
+
+	totalincome +=extra_monthlyincome;
+	totalextra += extra_monthlyincome;
+	$('#indicatebar').html('<p>popularity: '.concat(popularity).concat
+		('drinktypes: ').concat(drinktypes).concat('service: ').concat(service).concat('sanitation: ').concat(sanity[0]).concat('security: ').concat(power[0]).concat('serendipity: ').concat(extraincomelevel).concat('totalincome: ').concat(totalincome).concat('</p>'));
+	
+	$('div.sales_star').html('<p>'.concat(star_salesperson).concat(' star</p>'));
+	$('div.bar_star').html('<p>'.concat(star_bartender).concat(' star</p>'));
+	$('div.clean_star').html('<p>'.concat(star_cleaner).concat(' star</p>'));
+	$('div.band_star').html('<p>'.concat(star_liveband).concat(' star</p>'));
+	$('div.secure_star').html('<p>'.concat(star_security).concat(' star</p>'));
+	$('div.serve_star').html('<p>'.concat(star_servant).concat(' star</p>'));
+
+	$('#env').html('<p>'.concat('danger').concat(power[1]).concat(' sanitation requirments').concat(sanity[1]).concat('</p>'));
+}
+
+function monthlyincome()//might move to accidents
+{ 
+	
+	regular_monthlyincome = (0.7*popularity+0.2*service+0.1*sanity[0]) * (drinktypes/3+10)*makingmoneycoef +extraincomelevel*15;
+	totalincome = Math.floor(totalincome +regular_monthlyincome);
+	upgradeallstuff();
+	extra_monthlyincome = 0;
+	alert(regular_monthlyincome);
+	alert(totalextra);
+	$('#cao').html('<button onclick = accidents(3)>go on to next month</button>');
+	$('#cao').fadeIn();
+	times = 3;
+	totalextra = 0;
+}
+
+
+
+
+
+
+
+var times = 3;//at most three stochastic accidents!
+//features initilization:
+var power = new Array(2);//own power,enemypower,ranging from 0 - 100
+var sanity = new Array(2);//own sanity,required sanity
+var service = 0;
+var popularity = 0;
+var drinktypes = 0;
+var extraincomelevel = 0;
+power[0] = 0;
+sanity[0] = 0;
+var makingmoneycoef = 0;
+
+var upgradefee = [200,400,800,1600,3200]
+//individually upgraded,0,1,2,3,4,5. user can upgrade this
+var star_salesperson =0;
+var star_bartender = 0;
+var star_cleaner = 0;
+var star_liveband = 0;
+var star_security = 0;
+var star_servant = 0;
+var bonuspopularity = 0;
+//causal connections,sequence as power,sanity,service,popularity,drinktypes,extraincome
+var effect_salesperson = [2*star_salesperson,    0,                             2*star_salesperson,     2*star_salesperson,                0,15*star_salesperson];
+var effect_bartender = [2*star_bartender,        0,            					2*star_bartender,       4*star_bartender,                  20*star_bartender,2*star_bartender];
+var effect_cleaner = [1*star_cleaner,            15*star_cleaner,               2*star_cleaner,		    2*star_cleaner,
+	0,0];
+var effect_liveband = [1*star_liveband,			0,								2*star_liveband,		8*star_liveband,			       0,3*star_liveband];
+var effect_security = [12*star_security,		0,								0,						2*star_security,		           0,0];
+var effect_servant = [2*star_servant,			5*star_servant,			12*star_servant,	    2*star_servant,		               0,0];
+
+//test
+power[0] = effect_salesperson[0] + effect_bartender[0] + effect_cleaner[0] + effect_liveband[0] + effect_security[0] + effect_servant[0];
+sanity[0] = effect_salesperson[1] + effect_bartender[1] + effect_cleaner[1] + effect_liveband[1] + effect_security[1] + effect_servant[1];
+service = effect_salesperson[2] + effect_bartender[2] + effect_cleaner[2] + effect_liveband[2] + effect_security[2] + effect_servant[2];
+popularity = effect_salesperson[3] + effect_bartender[3] + effect_cleaner[3] + effect_liveband[3] + effect_security[3] + effect_servant[3];
+drinktypes = effect_salesperson[4] + effect_bartender[4] + effect_cleaner[4] + effect_liveband[4] + effect_security[4] + effect_servant[4];
+extraincomelevel = effect_salesperson[5] + effect_bartender[5] + effect_cleaner[5] + effect_liveband[5] + effect_security[5] + effect_servant[5];
+
+//income calculations
+var totalincome = 1000; 
+var incident = 0;
+var regular_monthlyincome = (0.7*popularity+0.2*service+0.1*sanity[0]) * (drinktypes+20) +extraincomelevel*30;//20 is types of beers,max=1.6w
+var extra_monthlyincome = 0;
+var totalextra = 0;
+
+console.log("popularity"+popularity);
+console.log("drinktypes"+drinktypes);
+console.log("income"+regular_monthlyincome);
+
+$('#cao').fadeOut();
+$('#indicatebar').hide();
+console.log('dsdsd');
+</script>
+</head>
+<body>
+<div id="initial">
+	<p>select difficulty</p>
+	<button onclick= initial(1)>beijing</button><p>low crime rate, low sanitation standard, high profits</p>
+	<button onclick= initial(2)>Osaka</button><p>low crime rate, high sanitation standard, medium profits</p>
+	<button onclick= initial(3)>AFGHANISTAN</button><p>high crime rate, low sanitation standard, medium profits</p>
+	<button onclick= initial(4)>Atlanta</button><p>high crime rate, high sanitation standard, low profits</p>
+</div>
+
+<div id="indicatebar">
+	<p>popularity 0 ,drinktypes 0 ,service 0 ,sanitation 0,security 0 ,serrendipity 0,totalincome 1000</p>
+</div>
+
+<div id ="env"></div>
+
+<div id="upgrade">
+<div>
+<div><p>salesperson</p><div class = 'sales_star'>0 star</div><button  onclick = upgrade(1)>upgrade</button></div>
+</div>
+
+<div>
+<div><p>bartender</p><div class = 'bar_star'>0 star</div><button  onclick = upgrade(2)>upgrade</button></div>
+</div>
+
+<div>
+<div><p>cleaner</p><div class = 'clean_star'>0 star</div><button  onclick = upgrade(3)>upgrade</button></div>
+</div>
+
+<div>
+<div><p>liveband</p><div class = 'band_star'>0 star</div><button  onclick = upgrade(4)>upgrade</button></div>
+</div>
+
+<div>
+<div><p>security</p><div class = 'secure_star'>0 star</div><button  onclick = upgrade(5)>upgrade</button></div>
+</div>
+
+<div>
+<div><p>servant</p><div class = 'serve_star'>0 star</div><button  onclick = upgrade(6)>upgrade</button></div>
+</div>
+
+</div>
+
+
+<div id = "cao">
+<!-- 	<button onclick = monthlyincome()>go on to next month</button> -->
+<button onclick = accidents(3)>go on to next month</button>
+</div>
+
+<div id = "end">
+	
+</div>
+</body>
+</html>
